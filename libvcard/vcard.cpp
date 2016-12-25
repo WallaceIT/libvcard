@@ -209,11 +209,14 @@ bool vCard::saveToFile(const QString& filename) const
     return false;
 }
 
-QList<vCard> vCard::fromByteArray(const QByteArray& data)
+QList<vCard> vCard::fromByteArray(const QByteArray& sdata)
 {
     QList<vCard> vcards;
     vCard current;
     bool started = false;
+
+    QByteArray data = sdata;
+    data = data.replace(VC_MULTI_LINE_TOKEN, "");
 
     QList<QByteArray> lines = data.split(VC_END_LINE_TOKEN);
     foreach (QByteArray line, lines)

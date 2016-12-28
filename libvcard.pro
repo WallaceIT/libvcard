@@ -19,42 +19,40 @@
 # $Date$
 ##
 
-VERSION=1.0.2
-VCARD_INCDIR = include/vcard
-VCARD_SRCDIR = libvcard
+QT       -= gui
 
-PUBLIC_HEADERS = $$VCARD_INCDIR/libvcard_global.h \
-    $$VCARD_INCDIR/vcard.h \
-    $$VCARD_INCDIR/vcardproperty.h \
-    $$VCARD_INCDIR/vcardparam.h
-
-QT -= gui
 TARGET = vcard
 TEMPLATE = lib
-DEFINES += VCARD_LIBRARY
-INCLUDEPATH += $$VCARD_INCDIR
-HEADERS += $$PUBLIC_HEADERS
-SOURCES += $$VCARD_SRCDIR/vcard.cpp \
-    $$VCARD_SRCDIR/vcardproperty.cpp \
-    $$VCARD_SRCDIR/vcardparam.cpp
-DESTDIR = $$VCARD_LIBDIR
 
-unix: {
-    # install library and headers
-    isEmpty(PREFIX) {
-      PREFIX = /usr/local
-    }
-    target.path = $$PREFIX/lib
-    INSTALLS += target
+include(version.pri)
+DEFINES += LIBVCARD_LIBRARY
+INCLUDEPATH += include
 
-    incfiles.path = $$PREFIX/include/vcard
-    incfiles.files = $$PUBLIC_HEADERS
-    INSTALLS += incfiles
 
-    # install pkg-config file (libvcard.pc)
-    CONFIG += create_pc create_prl
-    QMAKE_PKGCONFIG_REQUIRES = QtCore
-    QMAKE_PKGCONFIG_LIBDIR = $$target.path
-    QMAKE_PKGCONFIG_INCDIR = $$incfiles.path
+SOURCES += \
+	src/vcard.cpp \
+	src/vcardparam.cpp \
+	src/vcardproperty.cpp \
+
+HEADERS += \
+	include/vcard.h \
+	include/vcardparam.h \
+	include/vcardproperty.h \
+        include/libvcard_global.h
+
+OTHER_FILES += version.pri
+
+unix {
+    target.path = $$[QT_INSTALL_LIBS]
+    headers.path = $$[QT_INSTALL_HEADERS]/$$TARGET
+    headers.files = $$HEADERS
+
+    CONFIG += create_pc create_prl link_pkgconfig
+
     QMAKE_PKGCONFIG_DESTDIR = pkgconfig
+    QMAKE_PKGCONFIG_INCDIR = $$headers.path
+
+    pkgconfig.path = $$[QT_INSTALL_LIBS]/pkgconfig-qt5
+
+    INSTALLS += target headers pkgconfig
 }
